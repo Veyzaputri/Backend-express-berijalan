@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { SLogin, SCreateAdmin, SUpdateAdmin, SDeleteAdmin } from "../services/auth.service.js";
+import { SLogin, SCreateAdmin, SUpdateAdmin, SDeleteAdmin, SGetAllAdmins } from "../services/auth.service.js";
 
 export const CLogin = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -38,5 +38,19 @@ export const CDeleteAdmin = async (req: Request, res: Response, next: NextFuncti
     res.status(200).json(result);
   } catch (error) {
     next(error instanceof Error ? error : new Error("Unexpected error"));
+  }
+};
+
+export const CGetAllAdmins = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) : Promise<void> => {
+  try{
+    const result = await SGetAllAdmins();
+
+    res.status(200).json(result);
+  }catch (error) {
+    next(error);
   }
 };
