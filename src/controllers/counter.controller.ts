@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import * as counterService from "../services/counter.service.js";
+//import { ICreateCounterRequest } from '@/interfaces/service/counter.interface';
 
 export const getAllCounters = async (req: Request, res: Response) => {
   try {
@@ -22,12 +23,25 @@ export const getCounterById = async (req: Request, res: Response) => {
 
 export const createCounter = async (req: Request, res: Response) => {
   try {
-    const counter = await counterService.createCounter(req.body);
-    res.status(201).json(counter);
-  } catch (err) {
+    const { name, maxQueue } = req.body; // ambil dari request body
+
+    if (!name) {
+      return res.status(400).json({ error: "Name is required" });
+    }
+
+    // panggil service prisma
+    const newCounter = await counterService.createCounter({
+      name,
+      maxQueue: maxQueue ?? 50, // default 50
+    });
+
+    res.status(201).json(newCounter);
+  } catch (err: any) {
+    console.error("Failed to create counter:", err);
     res.status(500).json({ error: "Failed to create counter" });
   }
 };
+
 
 export const updateCounter = async (req: Request, res: Response) => {
   try {
