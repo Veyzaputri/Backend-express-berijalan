@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import type { IGlobalResponse, ILoginResponse } from "../interfaces/global.interface.js";
 import { UGenerateToken } from "../utils/generateToken.js";
 
+
 const prisma = new PrismaClient();
 
 export const SLogin = async (
@@ -106,3 +107,29 @@ export const SDeleteAdmin = async (id: number): Promise<IGlobalResponse<any>> =>
     throw new Error(err.message || "Failed to delete admin");
   }
 };
+
+export const SGetAllAdmins = async (): Promise<IGlobalResponse> => {
+  const admins = await prisma.admin.findMany({
+    where: {
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      name: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true, 
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return {
+    status: true,
+    message: "Admins retrieved successfully",
+    data: admins,
+  }
+}
